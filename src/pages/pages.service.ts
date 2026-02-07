@@ -1,14 +1,13 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { randomUUID } from "crypto";
-import { type PageContentBlock, UpdatePageDbValues } from "./pages.schema";
-import { pages } from "src/db/schema";
-import { DB } from "src/db/db.module";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import * as schema from "src/db/schema";
-import { HttpErrors } from "src/common/errors/http-errors";
-import { CreatePageDto } from "./dto/create.dto";
-import { UpdatePageDto } from "./dto/update.dto";
+import { Injectable, Inject } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
+import { type PageContentBlock, UpdatePageDbValues } from './pages.schema';
+import { pages } from 'src/db/schema';
+import { DB } from 'src/db/db.module';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import * as schema from 'src/db/schema';
+import { type UpdatePageDto, type CreatePageDto } from './dto';
+import { HttpErrors } from 'src/common/errors';
 
 @Injectable()
 export class PagesService {
@@ -16,23 +15,21 @@ export class PagesService {
     @Inject(DB)
     private readonly db: NodePgDatabase<typeof schema>,
   ) {}
-  
+
   async create(dto: CreatePageDto) {
     const existing = await this.db.query.pages.findFirst({
-      where: eq(pages.slug, dto.slug)
-    })
-    if(existing){
-      HttpErrors.conflict("Page with this slug already exist!")
-      return
+      where: eq(pages.slug, dto.slug),
+    });
+    if (existing) {
+      HttpErrors.conflict('Page with this slug already exist!');
+      return;
     }
 
-    const content: PageContentBlock[] = dto.content.map(
-      (block, index) => ({
-        ...block,
-        id: randomUUID(),
-        order: index,
-      }),
-    );
+    const content: PageContentBlock[] = dto.content.map((block, index) => ({
+      ...block,
+      id: randomUUID(),
+      order: index,
+    }));
 
     const [page] = await this.db
       .insert(pages)
@@ -55,7 +52,7 @@ export class PagesService {
     });
 
     if (!page) {
-      return HttpErrors.notFound("This page not found")
+      return HttpErrors.notFound('This page not found');
     }
 
     return page;
@@ -65,36 +62,29 @@ export class PagesService {
     const { content, ...rest } = dto;
 
     const values: UpdatePageDbValues = rest;
-  
+
     if (content) {
       values.content = content.map((block, index) => ({
         ...block,
         id: randomUUID(),
         order: index,
       }));
-    } 
+    }
 
-    const [page] = await this.db
-      .update(pages)
-      .set(values)
-      .where(eq(pages.id, id))
-      .returning();
+    const [page] = await this.db.update(pages).set(values).where(eq(pages.id, id)).returning();
 
     if (!page) {
-      HttpErrors.notFound("This page not found")
+      HttpErrors.notFound('This page not found');
     }
 
     return page;
   }
 
   async remove(id: string) {
-    const [page] = await this.db
-      .delete(pages)
-      .where(eq(pages.id, id))
-      .returning();
+    const [page] = await this.db.delete(pages).where(eq(pages.id, id)).returning();
 
     if (!page) {
-      HttpErrors.notFound("This page not found")
+      HttpErrors.notFound('This page not found');
     }
 
     return page;
