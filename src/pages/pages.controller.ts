@@ -1,19 +1,44 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
 
 import { PagesService } from './pages.service';
 import { ZodValidationPipe } from 'src/common/zod/zod.pipe';
-import { type CreatePageDto, CreatePageSchema, type UpdatePageDto, UpdatePageSchema } from './dto';
+import { type UpdatePageDto, UpdatePageSchema } from './dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { randomUUID } from 'crypto';
+import { extname } from 'path';
 
 @Controller('pages')
 export class PagesController {
   constructor(private readonly pagesService: PagesService) {}
 
   @Post()
-  create(
-    @Body(new ZodValidationPipe(CreatePageSchema))
-    dto: CreatePageDto,
-  ) {
-    return this.pagesService.create(dto);
+  @UseInterceptors(
+    FilesInterceptor('images', 20, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (_, file, cb) => {
+          cb(null, `${randomUUID()}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  create(@UploadedFiles() files: Express.Multer.File[], @Body('data') rawData: string) {
+    const dto = JSON.parse(rawData);
+
+    const uploadedUrls = files.map((file) => `/uploads/${file.filename}`);
+
+    return this.pagesService.create(dto, uploadedUrls);
   }
 
   @Get()

@@ -16,20 +16,28 @@ export class PagesService {
     private readonly db: NodePgDatabase<typeof schema>,
   ) {}
 
-  async create(dto: CreatePageDto) {
-    const existing = await this.db.query.pages.findFirst({
-      where: eq(pages.slug, dto.slug),
-    });
-    if (existing) {
-      HttpErrors.conflict('Page with this slug already exist!');
-      return;
-    }
+  async create(dto: CreatePageDto, uploadedUrls: string[]) {
+    let imageCounter = 0;
 
-    const content: PageContentBlock[] = dto.content.map((block, index) => ({
-      ...block,
-      id: randomUUID(),
-      order: index,
-    }));
+    const content: PageContentBlock[] = dto.content.map((block, index) => {
+      if (block.type === 'IMAGE') {
+        const imgUrl = uploadedUrls[imageCounter];
+        imageCounter++;
+
+        return {
+          ...block,
+          id: randomUUID(),
+          order: index,
+          source: imgUrl,
+        };
+      }
+
+      return {
+        ...block,
+        id: randomUUID(),
+        order: index,
+      };
+    });
 
     const [page] = await this.db
       .insert(pages)

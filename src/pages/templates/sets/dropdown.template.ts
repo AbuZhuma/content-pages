@@ -1,15 +1,16 @@
 import { z } from 'zod';
-import { TextTemplate } from '../blocks';
 import { buildStyles } from 'src/common/utils';
+import { TextBlock } from '../blocks';
+import { buildTemplate } from 'src/common/utils/buildTemplate';
 
-export const DropdownTemplate = z.object({
-  type: z.literal('DROPDOWN'),
-  data: z.object({
-    heading: TextTemplate.extend({
-      styles: buildStyles(['mts', 'mtw', 'tl']),
+export const DropdownTemplate = buildTemplate(
+  'DROPDOWN',
+  z.object({
+    heading: TextBlock.extend({
+      styles: buildStyles(['textSizeLarge', 'textWeigthSemiBold', 'textAlignLeft']),
     }),
-    inner: TextTemplate.extend({
-      styles: buildStyles(['sts', 'stw', 'tl']),
+    inner: TextBlock.extend({
+      styles: buildStyles(['textSizeMedium', 'textWeigthNormal', 'textAlignLeft']),
     }),
   }),
-});
+);

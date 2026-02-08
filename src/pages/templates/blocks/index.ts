@@ -1,2 +1,2 @@
-export * from './image.template';
-export * from './text.template';
+export * from './image.block';
+export * from './text.block';

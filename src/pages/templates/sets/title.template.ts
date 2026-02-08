@@ -1,12 +1,13 @@
 import { z } from 'zod';
-import { TextTemplate } from '../blocks';
 import { buildStyles } from 'src/common/utils';
+import { TextBlock } from '../blocks';
+import { buildTemplate } from 'src/common/utils/buildTemplate';
 
-export const TitleTemplate = z.object({
-  type: z.literal('TEXT'),
-  data: z.object({
-    text: TextTemplate.extend({
-      styles: buildStyles(['lts', 'ltw', 'tc']),
+export const TitleTemplate = buildTemplate(
+  'TITLE',
+  z.object({
+    text: TextBlock.extend({
+      styles: buildStyles(['textSizeHuge', 'textWeigthBold', 'textAlignLeft']),
     }),
   }),
-});
+);
