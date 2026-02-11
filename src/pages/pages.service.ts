@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
-import { type PageContentBlock, UpdatePageDbValues } from './pages.schema';
+import { type PageContentBlock, templateMap, UpdatePageDbValues } from './pages.schema';
 import { pages } from 'src/db/schema';
 import { DB } from 'src/db/db.module';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -18,22 +18,31 @@ export class PagesService {
 
   async create(dto: CreatePageDto, uploadedUrls: string[]) {
     let imageCounter = 0;
+    const isExist = await this.db.query.pages.findFirst({
+      where: eq(pages.slug, dto.slug),
+    });
+    if (isExist) {
+      return HttpErrors.badRequest('Page with this slug already exist!');
+    }
 
     const content: PageContentBlock[] = dto.content.map((block, index) => {
+      const parsedBlock = templateMap[block.type as string].parse(block);
       if (block.type === 'IMAGE') {
         const imgUrl = uploadedUrls[imageCounter];
         imageCounter++;
 
         return {
-          ...block,
+          ...parsedBlock,
+          data: {
+            ...parsedBlock.data,
+            source: imgUrl,
+          },
           id: randomUUID(),
           order: index,
-          source: imgUrl,
         };
       }
-
       return {
-        ...block,
+        ...parsedBlock,
         id: randomUUID(),
         order: index,
       };
@@ -57,6 +66,18 @@ export class PagesService {
   async findOne(id: string) {
     const page = await this.db.query.pages.findFirst({
       where: eq(pages.id, id),
+    });
+
+    if (!page) {
+      return HttpErrors.notFound('This page not found');
+    }
+
+    return page;
+  }
+
+  async findOneBySlug(slug: string) {
+    const page = await this.db.query.pages.findFirst({
+      where: eq(pages.slug, slug),
     });
 
     if (!page) {

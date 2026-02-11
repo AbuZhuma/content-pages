@@ -36,7 +36,7 @@ export class PagesController {
   create(@UploadedFiles() files: Express.Multer.File[], @Body('data') rawData: string) {
     const dto = JSON.parse(rawData);
 
-    const uploadedUrls = files.map((file) => `/uploads/${file.filename}`);
+    const uploadedUrls = files ? files.map((file) => `/uploads/${file.filename}`) : [];
 
     return this.pagesService.create(dto, uploadedUrls);
   }
@@ -46,9 +46,9 @@ export class PagesController {
     return this.pagesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pagesService.findOne(id);
+  @Get(':slug')
+  findOneBySlug(@Param('slug') slug: string) {
+    return this.pagesService.findOneBySlug(slug);
   }
 
   @Patch(':id')

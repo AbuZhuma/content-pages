@@ -1,0 +1,1 @@
+ALTER TYPE "public"."page_category" ADD VALUE 'BLOG';

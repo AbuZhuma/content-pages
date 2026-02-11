@@ -8,6 +8,13 @@
       "when": 1769595101302,
       "tag": "0000_foamy_ma_gnuci",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770708534706,
+      "tag": "0001_slow_banshee",
+      "breakpoints": true
     }
   ]
 }

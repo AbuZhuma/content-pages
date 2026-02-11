@@ -14,8 +14,11 @@ import { UploadModule } from './multer/upload.module';
     DbModule,
     PagesModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     UploadModule,
   ],

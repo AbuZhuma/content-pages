@@ -36,3 +36,10 @@ export type PageContentBlock = z.infer<typeof PageContentStoredSchema>;
 export type UpdatePageDbValues = Omit<UpdatePageDto, 'content'> & {
   content?: PageContentBlock[];
 };
+
+export const templateMap: Record<string, any> = {
+  TITLE: TitleTemplate,
+  TEXT: TextTemplate,
+  IMAGE: ImageTemplate,
+  DROPDOWN: DropdownTemplate,
+};
