@@ -6,18 +6,51 @@ export const styles = {
   textSizeMedium: 'text-medium',
   textSizeSmall: 'text-small',
   textSizeXSmall: 'text-xsmall',
+  textSizeXXSmall: 'text-xxsmall',
+  textSizeHero: 'text-hero', // для заголовков типа hero
 
   // === Text weight ===
-  textWeigthBold: 'text-bold',
-  textWeigthSemiBold: 'text-semibold',
-  textWeigthNormal: 'text-normal',
-  textWeigthLight: 'text-light',
+  textWeightBlack: 'text-black',
+  textWeightBold: 'text-bold',
+  textWeightSemiBold: 'text-semibold',
+  textWeightMedium: 'text-medium',
+  textWeightNormal: 'text-normal',
+  textWeightLight: 'text-light',
+  textWeightExtraLight: 'text-extralight',
+
+  // === Text style ===
+  textItalic: 'text-italic',
+  textUppercase: 'text-uppercase',
+  textLowercase: 'text-lowercase',
+  textCapitalized: 'text-capitalize',
+  textTruncate: 'text-truncate',
+  textUnderline: 'text-underline',
+  textLineThrough: 'text-line-through',
 
   // === Text alignment ===
   textAlignCenter: 'text-center',
   textAlignLeft: 'text-left',
   textAlignRight: 'text-right',
   textAlignJustify: 'text-justify',
+  textAlignStart: 'text-start',
+  textAlignEnd: 'text-end',
+
+  // === Text color ===
+  textColorPrimary: 'text-primary',
+  textColorSecondary: 'text-secondary',
+  textColorAccent: 'text-accent',
+  textColorSuccess: 'text-success',
+  textColorWarning: 'text-warning',
+  textColorError: 'text-error',
+  textColorInfo: 'text-info',
+
+  // === Backgrounds ===
+  bgPrimary: 'bg-primary',
+  bgSecondary: 'bg-secondary',
+  bgAccent: 'bg-accent',
+  bgLight: 'bg-light',
+  bgDark: 'bg-dark',
+  bgTransparent: 'bg-transparent',
 
   // === Image sizes ===
   imageSizeHuge: 'image-huge',
@@ -25,6 +58,10 @@ export const styles = {
   imageSizeMedium: 'image-medium',
   imageSizeSmall: 'image-small',
   imageSizeTiny: 'image-tiny',
+  imageFitCover: 'image-cover',
+  imageFitContain: 'image-contain',
+  imageRounded: 'image-rounded',
+  imageCircle: 'image-circle',
 
   // === Block sizes ===
   blockSizeHuge: 'block-huge',
@@ -32,6 +69,30 @@ export const styles = {
   blockSizeMedium: 'block-medium',
   blockSizeSmall: 'block-small',
   blockSizeTiny: 'block-tiny',
+
+  // === Display ===
+  displayBlock: 'd-block',
+  displayInlineBlock: 'd-inline-block',
+  displayInline: 'd-inline',
+  displayFlex: 'd-flex',
+  displayInlineFlex: 'd-inline-flex',
+  displayGrid: 'd-grid',
+  displayNone: 'd-none',
+
+  // === Flex helpers ===
+  flexRow: 'flex-row',
+  flexColumn: 'flex-column',
+  flexWrap: 'flex-wrap',
+  flexNoWrap: 'flex-nowrap',
+  justifyStart: 'justify-start',
+  justifyEnd: 'justify-end',
+  justifyCenter: 'justify-center',
+  justifyBetween: 'justify-between',
+  justifyAround: 'justify-around',
+  alignStart: 'align-start',
+  alignEnd: 'align-end',
+  alignCenter: 'align-center',
+  alignStretch: 'align-stretch',
 
   // === Positioning ===
   positionCenter: 'position-center',
@@ -43,8 +104,12 @@ export const styles = {
   positionTopRight: 'position-top-right',
   positionBottomLeft: 'position-bottom-left',
   positionBottomRight: 'position-bottom-right',
+  positionAbsolute: 'position-absolute',
+  positionRelative: 'position-relative',
+  positionFixed: 'position-fixed',
+  positionSticky: 'position-sticky',
 
-  // === Margin Top ===
+  // === Margin helpers ===
   mt0: 'margin-top-0',
   mt5: 'margin-top-5',
   mt10: 'margin-top-10',
@@ -55,8 +120,8 @@ export const styles = {
   mt35: 'margin-top-35',
   mt40: 'margin-top-40',
   mt50: 'margin-top-50',
+  mAuto: 'margin-auto',
 
-  // === Margin Bottom ===
   mb0: 'margin-bottom-0',
   mb5: 'margin-bottom-5',
   mb10: 'margin-bottom-10',
@@ -68,7 +133,6 @@ export const styles = {
   mb40: 'margin-bottom-40',
   mb50: 'margin-bottom-50',
 
-  // === Margin Left ===
   ml0: 'margin-left-0',
   ml5: 'margin-left-5',
   ml10: 'margin-left-10',
@@ -80,7 +144,6 @@ export const styles = {
   ml40: 'margin-left-40',
   ml50: 'margin-left-50',
 
-  // === Margin Right ===
   mr0: 'margin-right-0',
   mr5: 'margin-right-5',
   mr10: 'margin-right-10',
@@ -92,7 +155,7 @@ export const styles = {
   mr40: 'margin-right-40',
   mr50: 'margin-right-50',
 
-  // === Padding Top ===
+  // === Padding helpers ===
   pt0: 'padding-top-0',
   pt5: 'padding-top-5',
   pt10: 'padding-top-10',
@@ -104,7 +167,6 @@ export const styles = {
   pt40: 'padding-top-40',
   pt50: 'padding-top-50',
 
-  // === Padding Bottom ===
   pb0: 'padding-bottom-0',
   pb5: 'padding-bottom-5',
   pb10: 'padding-bottom-10',
@@ -116,7 +178,6 @@ export const styles = {
   pb40: 'padding-bottom-40',
   pb50: 'padding-bottom-50',
 
-  // === Padding Left ===
   pl0: 'padding-left-0',
   pl5: 'padding-left-5',
   pl10: 'padding-left-10',
@@ -128,7 +189,6 @@ export const styles = {
   pl40: 'padding-left-40',
   pl50: 'padding-left-50',
 
-  // === Padding Right ===
   pr0: 'padding-right-0',
   pr5: 'padding-right-5',
   pr10: 'padding-right-10',
@@ -139,6 +199,32 @@ export const styles = {
   pr35: 'padding-right-35',
   pr40: 'padding-right-40',
   pr50: 'padding-right-50',
+
+  // === Border ===
+  borderNone: 'border-none',
+  border1: 'border-1',
+  border2: 'border-2',
+  borderSolid: 'border-solid',
+  borderDashed: 'border-dashed',
+  borderDotted: 'border-dotted',
+  borderRadiusNone: 'border-radius-none',
+  borderRadiusSmall: 'border-radius-small',
+  borderRadiusMedium: 'border-radius-medium',
+  borderRadiusLarge: 'border-radius-large',
+
+  // === Cursor ===
+  cursorDefault: 'cursor-default',
+  cursorPointer: 'cursor-pointer',
+  cursorMove: 'cursor-move',
+  cursorText: 'cursor-text',
+  cursorNotAllowed: 'cursor-not-allowed',
+
+  // === Hover & interactive ===
+  hoverUnderline: 'hover-underline',
+  hoverScale: 'hover-scale',
+  hoverShadow: 'hover-shadow',
+  activeScale: 'active-scale',
+  focusOutline: 'focus-outline',
 } as const;
 
 export type StyleKey = keyof typeof styles;

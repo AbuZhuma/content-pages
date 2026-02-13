@@ -8,6 +8,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from 'src/db/schema';
 import { type UpdatePageDto, type CreatePageDto } from './dto';
 import { HttpErrors } from 'src/common/errors';
+import { styles } from './templates/styles';
 
 @Injectable()
 export class PagesService {
@@ -117,5 +118,10 @@ export class PagesService {
     }
 
     return page;
+  }
+
+  async getStyles() {
+    const stylesKeys = Object.values(styles);
+    return stylesKeys;
   }
 }

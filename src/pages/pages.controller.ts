@@ -12,11 +12,12 @@ import {
 
 import { PagesService } from './pages.service';
 import { ZodValidationPipe } from 'src/common/zod/zod.pipe';
-import { type UpdatePageDto, UpdatePageSchema } from './dto';
+import { CreatePageSchema, type UpdatePageDto, UpdatePageSchema } from './dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { randomUUID } from 'crypto';
 import { extname } from 'path';
+import { HttpErrors } from 'src/common/errors';
 
 @Controller('pages')
 export class PagesController {
@@ -34,16 +35,39 @@ export class PagesController {
     }),
   )
   create(@UploadedFiles() files: Express.Multer.File[], @Body('data') rawData: string) {
-    const dto = JSON.parse(rawData);
+    let dto;
+    try {
+      dto = JSON.parse(rawData);
+    } catch (err) {
+      throw HttpErrors.badRequest('Invalid json in data field');
+    }
 
+    const parseResult = CreatePageSchema.safeParse(dto);
+    if (!parseResult.success) {
+      const errors = JSON.parse(parseResult.error.message)
+        .map((err) => {
+          const path = err.path.length ? err.path.join('.') : 'root';
+          return `${path}: ${err.message}`;
+        })
+        .join('; ');
+
+      throw HttpErrors.badRequest(errors);
+    }
+
+    const validatedDto = parseResult.data;
     const uploadedUrls = files ? files.map((file) => `/uploads/${file.filename}`) : [];
 
-    return this.pagesService.create(dto, uploadedUrls);
+    return this.pagesService.create(validatedDto, uploadedUrls);
   }
 
   @Get()
   findAll() {
     return this.pagesService.findAll();
+  }
+
+  @Get('styles')
+  getStyles() {
+    return this.pagesService.getStyles();
   }
 
   @Get(':slug')

@@ -7,7 +7,7 @@ export const TextTemplate = buildTemplate(
   'TEXT',
   z.object({
     text: TextBlock.extend({
-      styles: buildStyles(['textSizeMedium', 'textWeigthNormal', 'textAlignLeft']),
+      styles: buildStyles([]),
     }),
   }),
 );

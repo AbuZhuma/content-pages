@@ -7,10 +7,10 @@ export const DropdownTemplate = buildTemplate(
   'DROPDOWN',
   z.object({
     heading: TextBlock.extend({
-      styles: buildStyles(['textSizeLarge', 'textWeigthSemiBold', 'textAlignLeft']),
+      styles: buildStyles([]),
     }),
     inner: TextBlock.extend({
-      styles: buildStyles(['textSizeMedium', 'textWeigthNormal', 'textAlignLeft']),
+      styles: buildStyles([]),
     }),
   }),
 );

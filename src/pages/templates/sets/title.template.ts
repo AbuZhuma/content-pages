@@ -7,7 +7,7 @@ export const TitleTemplate = buildTemplate(
   'TITLE',
   z.object({
     text: TextBlock.extend({
-      styles: buildStyles(['textSizeHuge', 'textWeigthBold', 'textAlignLeft']),
+      styles: buildStyles([]),
     }),
   }),
 );
