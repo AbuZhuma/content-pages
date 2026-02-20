@@ -75,13 +75,46 @@ export class PagesController {
     return this.pagesService.findOneBySlug(slug);
   }
 
-  @Patch(':id')
+  @Patch(':slug')
+  @UseInterceptors(
+    FilesInterceptor('images', 20, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (_, file, cb) => {
+          cb(null, `${randomUUID()}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
   update(
-    @Param('id') id: string,
-    @Body(new ZodValidationPipe(UpdatePageSchema))
-    dto: UpdatePageDto,
+    @Param('slug') slug: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('data') rawData: string,
   ) {
-    return this.pagesService.update(id, dto);
+    let dto;
+
+    try {
+      dto = JSON.parse(rawData);
+    } catch {
+      throw HttpErrors.badRequest('Invalid json in data field');
+    }
+
+    const parseResult = UpdatePageSchema.safeParse(dto);
+    if (!parseResult.success) {
+      const errors = JSON.parse(parseResult.error.message)
+        .map((err) => {
+          const path = err.path.length ? err.path.join('.') : 'root';
+          return `${path}: ${err.message}`;
+        })
+        .join('; ');
+
+      throw HttpErrors.badRequest(errors);
+    }
+    console.log(slug);
+
+    const uploadedUrls = files ? files.map((f) => `/uploads/${f.filename}`) : [];
+
+    return this.pagesService.update(slug, parseResult.data, uploadedUrls);
   }
 
   @Delete(':id')

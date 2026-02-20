@@ -88,23 +88,47 @@ export class PagesService {
     return page;
   }
 
-  async update(id: string, dto: UpdatePageDto) {
+  async update(slug: string, dto: UpdatePageDto, uploadedUrls: string[]) {
+    let imageCounter = 0;
+
     const { content, ...rest } = dto;
 
-    const values: UpdatePageDbValues = rest;
+    const values: UpdatePageDbValues = {
+      ...rest,
+    };
 
     if (content) {
-      values.content = content.map((block, index) => ({
-        ...block,
-        id: randomUUID(),
-        order: index,
-      }));
+      values.content = content.map((block, index) => {
+        const parsedBlock = templateMap[block.type as string].parse(block);
+
+        if (block.type === 'IMAGE') {
+          const imgUrl = uploadedUrls[imageCounter];
+          imageCounter++;
+
+          return {
+            ...parsedBlock,
+            data: {
+              ...parsedBlock.data,
+              source: imgUrl,
+            },
+            id: randomUUID(),
+            order: index,
+          };
+        }
+        console.log(parsedBlock);
+
+        return {
+          ...parsedBlock,
+          id: randomUUID(),
+          order: index,
+        };
+      });
     }
 
-    const [page] = await this.db.update(pages).set(values).where(eq(pages.id, id)).returning();
+    const [page] = await this.db.update(pages).set(values).where(eq(pages.slug, slug)).returning();
 
     if (!page) {
-      HttpErrors.notFound('This page not found');
+      return HttpErrors.notFound('This page not found');
     }
 
     return page;

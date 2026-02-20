@@ -1,11 +1,10 @@
 import { z } from 'zod';
 import type { UpdatePageDto } from './dto/update.dto';
-import { DropdownTemplate, TitleTemplate } from './templates/sets';
+import { DropdownTemplate } from './templates/sets';
 import { TextTemplate } from './templates/sets/text.template';
 import { ImageTemplate } from './templates/sets/image.template';
 
 export const ContentInputSchema = z.discriminatedUnion('type', [
-  TitleTemplate,
   DropdownTemplate,
   TextTemplate,
   ImageTemplate,
@@ -38,7 +37,6 @@ export type UpdatePageDbValues = Omit<UpdatePageDto, 'content'> & {
 };
 
 export const templateMap: Record<string, any> = {
-  TITLE: TitleTemplate,
   TEXT: TextTemplate,
   IMAGE: ImageTemplate,
   DROPDOWN: DropdownTemplate,

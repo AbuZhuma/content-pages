@@ -5,6 +5,6 @@ import { buildStyles } from 'src/common/utils';
 export const ImageTemplate = buildTemplate(
   'IMAGE',
   z.object({
-    styles: buildStyles(['imageSizeMedium', 'positionCenter']),
+    styles: buildStyles([]),
   }),
 );
