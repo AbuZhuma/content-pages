@@ -11,8 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { PagesService } from './pages.service';
-import { ZodValidationPipe } from 'src/common/zod/zod.pipe';
-import { CreatePageSchema, type UpdatePageDto, UpdatePageSchema } from './dto';
+import { CreatePageSchema, UpdatePageSchema } from './dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { randomUUID } from 'crypto';
@@ -70,9 +69,9 @@ export class PagesController {
     return this.pagesService.getStyles();
   }
 
-  @Get(':slug')
-  findOneBySlug(@Param('slug') slug: string) {
-    return this.pagesService.findOneBySlug(slug);
+  @Get(':locale/:slug')
+  findOneBySlug(@Param('locale') locale: string, @Param('slug') slug: string) {
+    return this.pagesService.findOneBySlug(slug, locale);
   }
 
   @Patch(':slug')
@@ -110,7 +109,6 @@ export class PagesController {
 
       throw HttpErrors.badRequest(errors);
     }
-    console.log(slug);
 
     const uploadedUrls = files ? files.map((f) => `/uploads/${f.filename}`) : [];
 

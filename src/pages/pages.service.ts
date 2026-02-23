@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { randomUUID } from 'crypto';
-import { type PageContentBlock, templateMap, UpdatePageDbValues } from './pages.schema';
+import { PageContentInputBlock, UpdatePageDbValues } from './pages.schema';
 import { pages } from 'src/db/schema';
 import { DB } from 'src/db/db.module';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -9,6 +8,9 @@ import * as schema from 'src/db/schema';
 import { type UpdatePageDto, type CreatePageDto } from './dto';
 import { HttpErrors } from 'src/common/errors';
 import { styles } from './templates/styles';
+import { buildContentBlocks } from 'src/common/utils/buildContents';
+import { Lang, langsMap } from 'src/common/schema/i18n';
+import { withOneText } from 'src/common/utils/withOneText';
 
 @Injectable()
 export class PagesService {
@@ -18,37 +20,13 @@ export class PagesService {
   ) {}
 
   async create(dto: CreatePageDto, uploadedUrls: string[]) {
-    let imageCounter = 0;
     const isExist = await this.db.query.pages.findFirst({
       where: eq(pages.slug, dto.slug),
     });
     if (isExist) {
       return HttpErrors.badRequest('Page with this slug already exist!');
     }
-
-    const content: PageContentBlock[] = dto.content.map((block, index) => {
-      const parsedBlock = templateMap[block.type as string].parse(block);
-      if (block.type === 'IMAGE') {
-        const imgUrl = uploadedUrls[imageCounter];
-        imageCounter++;
-
-        return {
-          ...parsedBlock,
-          data: {
-            ...parsedBlock.data,
-            source: imgUrl,
-          },
-          id: randomUUID(),
-          order: index,
-        };
-      }
-      return {
-        ...parsedBlock,
-        id: randomUUID(),
-        order: index,
-      };
-    });
-
+    const content = await buildContentBlocks(dto.content, uploadedUrls);
     const [page] = await this.db
       .insert(pages)
       .values({
@@ -68,15 +46,13 @@ export class PagesService {
     const page = await this.db.query.pages.findFirst({
       where: eq(pages.id, id),
     });
-
     if (!page) {
       return HttpErrors.notFound('This page not found');
     }
-
     return page;
   }
 
-  async findOneBySlug(slug: string) {
+  async findOneBySlug(slug: string, locale: string) {
     const page = await this.db.query.pages.findFirst({
       where: eq(pages.slug, slug),
     });
@@ -85,12 +61,17 @@ export class PagesService {
       return HttpErrors.notFound('This page not found');
     }
 
-    return page;
+    const blocks: PageContentInputBlock = page.content || [];
+    const correctLocale = langsMap[locale] ? langsMap[locale] : 'ru';
+    const localizedBlocks = blocks.map((block) => withOneText(correctLocale as Lang, block));
+
+    return {
+      ...page,
+      content: localizedBlocks,
+    };
   }
 
   async update(slug: string, dto: UpdatePageDto, uploadedUrls: string[]) {
-    let imageCounter = 0;
-
     const { content, ...rest } = dto;
 
     const values: UpdatePageDbValues = {
@@ -98,31 +79,7 @@ export class PagesService {
     };
 
     if (content) {
-      values.content = content.map((block, index) => {
-        const parsedBlock = templateMap[block.type as string].parse(block);
-
-        if (block.type === 'IMAGE') {
-          const imgUrl = uploadedUrls[imageCounter];
-          imageCounter++;
-
-          return {
-            ...parsedBlock,
-            data: {
-              ...parsedBlock.data,
-              source: imgUrl,
-            },
-            id: randomUUID(),
-            order: index,
-          };
-        }
-        console.log(parsedBlock);
-
-        return {
-          ...parsedBlock,
-          id: randomUUID(),
-          order: index,
-        };
-      });
+      values.content = await buildContentBlocks(content, uploadedUrls);
     }
 
     const [page] = await this.db.update(pages).set(values).where(eq(pages.slug, slug)).returning();
@@ -130,10 +87,8 @@ export class PagesService {
     if (!page) {
       return HttpErrors.notFound('This page not found');
     }
-
     return page;
   }
-
   async remove(id: string) {
     const [page] = await this.db.delete(pages).where(eq(pages.id, id)).returning();
 

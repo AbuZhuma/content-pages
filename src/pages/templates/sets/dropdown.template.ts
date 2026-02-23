@@ -1,16 +1,11 @@
 import { z } from 'zod';
-import { buildStyles } from 'src/common/utils';
-import { TextBlock } from '../blocks';
 import { buildTemplate } from 'src/common/utils/buildTemplate';
+import { TextBlock } from '../blocks';
 
 export const DropdownTemplate = buildTemplate(
   'DROPDOWN',
   z.object({
-    heading: TextBlock.extend({
-      styles: buildStyles([]),
-    }),
-    inner: TextBlock.extend({
-      styles: buildStyles([]),
-    }),
+    heading: TextBlock,
+    inner: TextBlock,
   }),
 );
